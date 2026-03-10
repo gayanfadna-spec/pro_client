@@ -21,7 +21,7 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const { data } = await axios.get('http://localhost:5000/api/inventory/stats');
+                const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/stats`);
                 setStats(data);
                 setLoading(false);
             } catch (error) {
@@ -43,7 +43,7 @@ const Dashboard = () => {
         setSelectedProduct(product);
         try {
             const config = { headers: { Authorization: `Bearer ${user?.token}` } };
-            const { data } = await axios.get(`http://localhost:5000/api/planning/recipes/${product._id}`, config);
+            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/planning/recipes/${product._id}`, config);
 
             // Extract material IDs. Handle both populated and non-populated cases
             const materialIds = data.ingredients.map(ing =>
@@ -65,12 +65,13 @@ const Dashboard = () => {
     };
 
     const displayedMaterials = recipeMaterials
-        ? stats.rawMaterials.filter(rm => recipeMaterials.includes(rm._id))
-        : stats.rawMaterials;
+        ? stats.rawMaterials?.filter(rm => recipeMaterials.includes(rm._id)) || []
+        : stats.rawMaterials || [];
 
     const displayedPacking = recipePackingMaterials
-        ? stats.packingMaterials.filter(pm => recipePackingMaterials.includes(pm._id))
-        : stats.packingMaterials;
+        ? stats.packingMaterials?.filter(pm => recipePackingMaterials.includes(pm._id)) || []
+        : stats.packingMaterials || [];
+
 
     const lowStockFG = stats.finishedGoods?.filter(fg => fg.currentQuantity < (fg.minStockQty || 0)) || [];
     const lowStockRM = stats.rawMaterials?.filter(rm => rm.currentQuantity < (rm.minStockQty || 0)) || [];

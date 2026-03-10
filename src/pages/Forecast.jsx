@@ -33,7 +33,7 @@ const Forecast = () => {
 
     const fetchProducts = async () => {
         try {
-            const { data } = await axios.get('http://localhost:5000/api/inventory/finished-goods');
+            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/finished-goods`);
             setProducts(data);
         } catch (error) {
             console.error("Error fetching products", error);
@@ -86,7 +86,7 @@ const Forecast = () => {
                 return;
             }
 
-            const { data } = await axios.post('http://localhost:5000/api/planning/calculate', { items: payload }, config);
+            const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/planning/calculate`, { items: payload }, config);
             setRequirements(data.aggregated);
             setBreakdown(data.breakdown);
         } catch (error) {

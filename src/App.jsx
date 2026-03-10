@@ -9,6 +9,7 @@ import Forecast from './pages/Forecast';
 import ProducibilityManager from './pages/ProducibilityManager';
 import UserManager from './pages/UserManager';
 import PackingMaterialManager from './pages/PackingMaterialManager';
+import NotFound from './pages/NotFound';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -39,7 +40,10 @@ function App() {
             <Route path="forecast" element={<AdminRoute><Forecast /></AdminRoute>} />
             <Route path="producible" element={<AdminRoute><ProducibilityManager /></AdminRoute>} />
             <Route path="users" element={<AdminRoute><UserManager /></AdminRoute>} />
+            <Route path="*" element={<NotFound />} />
           </Route>
+
+          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Router>
     </AuthProvider>

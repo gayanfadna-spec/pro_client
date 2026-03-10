@@ -25,7 +25,7 @@ const UserManager = () => {
 
     const fetchUsers = async () => {
         try {
-            const { data } = await axios.get('http://localhost:5000/api/auth', config);
+            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/auth`, config);
             setUsers(data);
             setLoading(false);
         } catch (err) {
@@ -51,9 +51,9 @@ const UserManager = () => {
                 const updateData = { ...formData };
                 if (!updateData.password) delete updateData.password;
 
-                await axios.put(`http://localhost:5000/api/auth/${editingUser._id}`, updateData, config);
+                await axios.put(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/auth/${editingUser._id}`, updateData, config);
             } else {
-                await axios.post('http://localhost:5000/api/auth/register', formData, config);
+                await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/auth/register`, formData, config);
             }
             setIsModalOpen(false);
             setEditingUser(null);
@@ -78,7 +78,7 @@ const UserManager = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
             try {
-                await axios.delete(`http://localhost:5000/api/auth/${id}`, config);
+                await axios.delete(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/auth/${id}`, config);
                 fetchUsers();
             } catch (err) {
                 setError('Failed to delete user');

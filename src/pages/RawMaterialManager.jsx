@@ -42,19 +42,19 @@ const RawMaterialManager = () => {
         try {
             const config = { headers: { Authorization: `Bearer ${user?.token}` } };
             if (activeTab === 'inventory') {
-                const { data } = await axios.get('http://localhost:5000/api/inventory/raw-materials', config);
+                const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/raw-materials`, config);
                 setMaterials(data);
             } else if (activeTab === 'in') {
                 const [matRes, grnRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/inventory/raw-materials', config),
-                    axios.get('http://localhost:5000/api/grn', config)
+                    axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/raw-materials`, config),
+                    axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/grn`, config)
                 ]);
                 setMaterials(matRes.data);
                 setGrns(grnRes.data.sort((a, b) => new Date(b.receivedDate) - new Date(a.receivedDate) || new Date(b.createdAt) - new Date(a.createdAt)));
             } else if (activeTab === 'out') {
                 const [matRes, noteRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/inventory/raw-materials', config),
-                    axios.get('http://localhost:5000/api/issue-notes', config)
+                    axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/raw-materials`, config),
+                    axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/issue-notes`, config)
                 ]);
                 setMaterials(matRes.data);
                 setNotes(noteRes.data.sort((a, b) => new Date(b.issueDate) - new Date(a.issueDate) || new Date(b.createdAt) - new Date(a.createdAt)));
@@ -98,9 +98,9 @@ const RawMaterialManager = () => {
         try {
             const config = { headers: { Authorization: `Bearer ${user?.token}` } };
             if (editingMaterial) {
-                await axios.put(`http://localhost:5000/api/inventory/raw-materials/${editingMaterial._id}`, form, config);
+                await axios.put(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/raw-materials/${editingMaterial._id}`, form, config);
             } else {
-                await axios.post('http://localhost:5000/api/inventory/raw-materials', form, config);
+                await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/raw-materials`, form, config);
             }
             setIsModalOpen(false);
             fetchData();
@@ -113,7 +113,7 @@ const RawMaterialManager = () => {
         if (!window.confirm("Are you sure you want to delete this material?")) return;
         try {
             const config = { headers: { Authorization: `Bearer ${user?.token}` } };
-            await axios.delete(`http://localhost:5000/api/inventory/raw-materials/${id}`, config);
+            await axios.delete(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/raw-materials/${id}`, config);
             fetchData();
         } catch (error) {
             alert(error.response?.data?.message || "Error deleting material");
@@ -192,7 +192,7 @@ const RawMaterialManager = () => {
         e.preventDefault();
         try {
             const config = { headers: { Authorization: `Bearer ${user?.token}` } };
-            const endpoint = transactionType === 'IN' ? 'http://localhost:5000/api/grn' : 'http://localhost:5000/api/issue-notes';
+            const endpoint = transactionType === 'IN' ? `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/grn` : `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/issue-notes`;
             const payload = transactionType === 'IN' ? {
                 grnNumber: transactionForm.number,
                 supplier: transactionForm.entity,

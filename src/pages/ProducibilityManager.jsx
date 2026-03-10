@@ -16,7 +16,7 @@ const ProducibilityManager = () => {
         setLoading(true);
         try {
             const config = { headers: { Authorization: `Bearer ${user?.token}` } };
-            const res = await axios.get('http://localhost:5000/api/planning/producible', config);
+            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/planning/producible`, config);
             setData(res.data);
         } catch (error) {
             console.error("Error fetching producible data", error);
@@ -57,7 +57,7 @@ const ProducibilityManager = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                        {data.map((item) => {
+                        {(Array.isArray(data) ? data : []).map((item) => {
                             // Find the material with the lowest possible production to show as limiting factor
                             let limitingMaterial = null;
                             let minRatio = Infinity;
@@ -105,7 +105,7 @@ const ProducibilityManager = () => {
                                 </tr>
                             );
                         })}
-                        {data.length === 0 && (
+                        {(!Array.isArray(data) || data.length === 0) && (
                             <tr>
                                 <td colSpan="6" className="p-20 text-center text-gray-400 italic">
                                     No products with defined recipes found. Define recipes in the Finished Goods Manager to see production potential.

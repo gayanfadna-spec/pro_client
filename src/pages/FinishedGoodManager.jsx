@@ -62,24 +62,24 @@ const FinishedGoodManager = () => {
             const config = { headers: { Authorization: `Bearer ${user?.token}` } };
             if (activeTab === 'inventory') {
                 const [prodRes, matRes, packRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/inventory/finished-goods', config),
-                    axios.get('http://localhost:5000/api/inventory/raw-materials', config),
-                    axios.get('http://localhost:5000/api/inventory/packing-materials', config)
+                    axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/finished-goods`, config),
+                    axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/raw-materials`, config),
+                    axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/packing-materials`, config)
                 ]);
                 setProducts(prodRes.data);
                 setMaterials(matRes.data);
                 setPackingMaterials(packRes.data);
             } else if (activeTab === 'in') {
                 const [fgRes, prodRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/inventory/finished-goods', config),
-                    axios.get('http://localhost:5000/api/fg-transactions/production', config)
+                    axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/finished-goods`, config),
+                    axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/fg-transactions/production`, config)
                 ]);
                 setProducts(fgRes.data);
                 setProductions(prodRes.data.sort((a, b) => new Date(b.productionDate) - new Date(a.productionDate) || new Date(b.createdAt) - new Date(a.createdAt)));
             } else if (activeTab === 'out') {
                 const [fgRes, dispRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/inventory/finished-goods', config),
-                    axios.get('http://localhost:5000/api/fg-transactions/dispatch', config)
+                    axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/finished-goods`, config),
+                    axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/fg-transactions/dispatch`, config)
                 ]);
                 setProducts(fgRes.data);
                 setDispatches(dispRes.data.sort((a, b) => new Date(b.dispatchDate) - new Date(a.dispatchDate) || new Date(b.createdAt) - new Date(a.createdAt)));
@@ -108,7 +108,7 @@ const FinishedGoodManager = () => {
 
             try {
                 const config = { headers: { Authorization: `Bearer ${user?.token}` } };
-                const { data } = await axios.get(`http://localhost:5000/api/planning/recipes/${product._id}`, config);
+                const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/planning/recipes/${product._id}`, config);
                 console.log("Fetched Recipe:", data);
                 setRecipeData({
                     batchSize: data.batchSize || 1,
@@ -144,14 +144,14 @@ const FinishedGoodManager = () => {
             let productId = editingProduct?._id;
 
             if (editingProduct) {
-                await axios.put(`http://localhost:5000/api/inventory/finished-goods/${productId}`, productForm, config);
+                await axios.put(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/finished-goods/${productId}`, productForm, config);
             } else {
-                const res = await axios.post('http://localhost:5000/api/inventory/finished-goods', productForm, config);
+                const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/finished-goods`, productForm, config);
                 productId = res.data._id;
             }
 
             // Save recipe
-            await axios.post('http://localhost:5000/api/planning/recipes', {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/planning/recipes`, {
                 finishedGoodId: productId,
                 ...recipeData
             }, config);
@@ -174,7 +174,7 @@ const FinishedGoodManager = () => {
         if (!window.confirm("Are you sure you want to delete this product? This will also delete its recipe.")) return;
         try {
             const config = { headers: { Authorization: `Bearer ${user?.token}` } };
-            await axios.delete(`http://localhost:5000/api/inventory/finished-goods/${id}`, config);
+            await axios.delete(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/finished-goods/${id}`, config);
             fetchData();
         } catch (error) {
             alert(error.response?.data?.message || "Error deleting product");
@@ -213,7 +213,7 @@ const FinishedGoodManager = () => {
 
         try {
             const config = { headers: { Authorization: `Bearer ${user?.token}` } };
-            const { data } = await axios.get(`http://localhost:5000/api/planning/recipes/${productId}`, config);
+            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/planning/recipes/${productId}`, config);
             setRecipeCache(prev => ({ ...prev, [productId]: data }));
             setHoveredRecipe(data);
         } catch (error) {
@@ -341,7 +341,7 @@ const FinishedGoodManager = () => {
 
         try {
             const config = { headers: { Authorization: `Bearer ${user?.token}` } };
-            const endpoint = transactionType === 'IN' ? 'http://localhost:5000/api/fg-transactions/production' : 'http://localhost:5000/api/fg-transactions/dispatch';
+            const endpoint = transactionType === 'IN' ? `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/fg-transactions/production` : `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/fg-transactions/dispatch`;
 
             const payload = transactionType === 'IN' ? {
                 productionId: transactionForm.number,
