@@ -468,7 +468,7 @@ const PackingMaterialManager = () => {
                                         <div className="flex-1 w-full">
                                             <SearchableSelect options={materials} value={item.material} onChange={(val) => handleTransactionItemChange(idx, 'material', val)} placeholder="Select Packing Material" label="Material" />
                                         </div>
-                                        <div className="w-full sm:w-32 flex items-center gap-2">
+                                        <div className="w-full sm:w-80 flex items-center gap-2">
                                             <input type="number" step="0.01" required value={item.quantity} onChange={(e) => handleTransactionItemChange(idx, 'quantity', Number(e.target.value))} className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg" placeholder="Qty" />
                                             {transactionForm.items.length > 1 && (
                                                 <button type="button" onClick={() => handleRemoveTransactionItem(idx)} className="text-red-500 p-2 text-xl hover:bg-red-50 rounded-lg transition-colors shrink-0">🗑️</button>

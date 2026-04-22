@@ -607,7 +607,7 @@ const FinishedGoodManager = () => {
                                                 <input type="text" placeholder="Batch" value={item.batchNumber} onChange={(e) => handleTransactionItemChange(idx, 'batchNumber', e.target.value)} className="w-full px-3 py-2 border-2 border-gray-100 rounded-lg text-sm" />
                                             </div>
                                         )}
-                                        <div className="w-full sm:w-24 flex items-center gap-2">
+                                        <div className="w-full sm:w-60 flex items-center gap-2">
                                             <input type="number" required value={item.quantity} onChange={(e) => handleTransactionItemChange(idx, 'quantity', Number(e.target.value))} className="w-full px-3 py-2 border-2 border-gray-100 rounded-lg text-sm" placeholder="Qty" />
                                             {transactionForm.items.length > 1 && (
                                                 <button type="button" onClick={() => handleRemoveTransactionItem(idx)} className="text-red-500 p-2 hover:bg-red-50 rounded-lg">🗑️</button>
@@ -756,7 +756,7 @@ const FinishedGoodManager = () => {
                                                                     ))}
                                                                 </select>
                                                             </div>
-                                                            <div className="w-full sm:w-28 flex gap-2">
+                                                            <div className="w-full sm:w-80 flex gap-2">
                                                                 <input
                                                                     type="number" step="0.001" required value={ing.quantity}
                                                                     onChange={(e) => handleIngredientChange(idx, 'quantity', e.target.value)}
@@ -802,7 +802,7 @@ const FinishedGoodManager = () => {
                                                                     ))}
                                                                 </select>
                                                             </div>
-                                                            <div className="w-full sm:w-28 flex gap-2">
+                                                            <div className="w-full sm:w-80 flex gap-2">
                                                                 <input
                                                                     type="number" step="0.001" required value={pack.quantity}
                                                                     onChange={(e) => handlePackagingChange(idx, 'quantity', e.target.value)}
