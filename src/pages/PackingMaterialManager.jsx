@@ -44,20 +44,20 @@ const PackingMaterialManager = () => {
             const config = { headers: { Authorization: `Bearer ${user?.token}` } };
             if (activeTab === 'inventory') {
                 const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/packing-materials`, config);
-                setMaterials(data);
+                setMaterials(data.sort((a, b) => a.name.localeCompare(b.name)));
             } else if (activeTab === 'in') {
                 const [matRes, inRes] = await Promise.all([
                     axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/packing-materials`, config),
                     axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/packing-grn`, config)
                 ]);
-                setMaterials(matRes.data);
+                setMaterials(matRes.data.sort((a, b) => a.name.localeCompare(b.name)));
                 setInTransactions(inRes.data.sort((a, b) => new Date(b.receivedDate) - new Date(a.receivedDate) || new Date(b.createdAt) - new Date(a.createdAt)));
             } else if (activeTab === 'out') {
                 const [matRes, outRes] = await Promise.all([
                     axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/packing-materials`, config),
                     axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/packing-issue-notes`, config)
                 ]);
-                setMaterials(matRes.data);
+                setMaterials(matRes.data.sort((a, b) => a.name.localeCompare(b.name)));
                 setOutTransactions(outRes.data.sort((a, b) => new Date(b.issueDate) - new Date(a.issueDate) || new Date(b.createdAt) - new Date(a.createdAt)));
             }
         } catch (error) {
@@ -406,7 +406,12 @@ const PackingMaterialManager = () => {
                         <form onSubmit={handleSave} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Name</label>
-                                <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-teal-500 outline-none" />
+                                <input list="existing-packing-materials" type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-teal-500 outline-none" />
+                                <datalist id="existing-packing-materials">
+                                    {[...new Set(materials.map(m => m.name))].filter(Boolean).map((name, index) => (
+                                        <option key={index} value={name} />
+                                    ))}
+                                </datalist>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
@@ -468,7 +473,7 @@ const PackingMaterialManager = () => {
                                         <div className="flex-1 w-full">
                                             <SearchableSelect options={materials} value={item.material} onChange={(val) => handleTransactionItemChange(idx, 'material', val)} placeholder="Select Packing Material" label="Material" />
                                         </div>
-                                        <div className="w-full sm:w-80 flex items-center gap-2">
+                                        <div className="w-full sm:w-32 flex items-center gap-2">
                                             <input type="number" step="0.01" required value={item.quantity} onChange={(e) => handleTransactionItemChange(idx, 'quantity', Number(e.target.value))} className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg" placeholder="Qty" />
                                             {transactionForm.items.length > 1 && (
                                                 <button type="button" onClick={() => handleRemoveTransactionItem(idx)} className="text-red-500 p-2 text-xl hover:bg-red-50 rounded-lg transition-colors shrink-0">🗑️</button>
