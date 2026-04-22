@@ -9,7 +9,7 @@ const Forecast = () => {
     const { user } = useAuth();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [calculating, setCalculating] = useState(false);
+    const [calculating, setCalculating] = useState(false);//
     const [selectedItems, setSelectedItems] = useState([]);
     const [requirements, setRequirements] = useState([]);
     const [breakdown, setBreakdown] = useState([]);
