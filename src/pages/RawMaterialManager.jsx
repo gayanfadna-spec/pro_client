@@ -4,6 +4,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useAuth } from '../context/AuthContext';
 import SearchableSelect from '../components/SearchableSelect';
+import RawMaterialImport from '../components/RawMaterialImport';
 import qoflLogo from '../assets/qofl_logo.png';
 
 const RawMaterialManager = () => {
@@ -88,7 +89,7 @@ const RawMaterialManager = () => {
             });
         } else {
             setEditingMaterial(null);
-            setForm({ name: '', sku: '', uom: '', currentQuantity: 0, minStockQty: 0 });
+            setForm({ name: '', sku: '', uom: 'kg', currentQuantity: 0, minStockQty: 0 });
         }
         setIsModalOpen(true);
     };
@@ -275,6 +276,10 @@ const RawMaterialManager = () => {
                         </div>
                     </div>
 
+                    {user?.role === 'admin' && (
+                        <RawMaterialImport onImportSuccess={fetchData} />
+                    )}
+
                     <div className="bg-white rounded-2xl shadow-xl overflow-x-auto border border-gray-100">
                         <table className="w-full text-left border-collapse">
                             <thead>
@@ -282,6 +287,7 @@ const RawMaterialManager = () => {
                                     <th className="p-5 border-b border-gray-100">Material Name</th>
                                     <th className="p-5 border-b border-gray-100">SKU</th>
                                     <th className="p-5 border-b border-gray-100 text-center">Stock Level</th>
+                                    <th className="p-5 border-b border-gray-100 text-center">Last Updated</th>
                                     <th className="p-5 border-b border-gray-100 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -294,6 +300,10 @@ const RawMaterialManager = () => {
                                             <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${material.currentQuantity < (material.minStockQty || 0) ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
                                                 {material.currentQuantity} {material.uom}
                                             </span>
+                                        </td>
+                                        <td className="p-5 text-center text-xs text-gray-500">
+                                            {material.updatedAt ? new Date(material.updatedAt).toLocaleDateString() : '-'}
+                                            {material.updatedAt && <div className="text-[10px] opacity-60">{new Date(material.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>}
                                         </td>
                                         <td className="p-5 text-right flex justify-end gap-2">
                                             {user?.role === 'admin' && (

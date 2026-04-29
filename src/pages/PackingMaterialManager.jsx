@@ -4,6 +4,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useAuth } from '../context/AuthContext';
 import SearchableSelect from '../components/SearchableSelect';
+import PackingMaterialImport from '../components/PackingMaterialImport';
 import qoflLogo from '../assets/qofl_logo.png';
 
 const PackingMaterialManager = () => {
@@ -44,20 +45,20 @@ const PackingMaterialManager = () => {
             const config = { headers: { Authorization: `Bearer ${user?.token}` } };
             if (activeTab === 'inventory') {
                 const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/packing-materials`, config);
-                setMaterials(data.sort((a, b) => a.name.localeCompare(b.name)));
+                setMaterials(data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)));
             } else if (activeTab === 'in') {
                 const [matRes, inRes] = await Promise.all([
                     axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/packing-materials`, config),
                     axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/packing-grn`, config)
                 ]);
-                setMaterials(matRes.data.sort((a, b) => a.name.localeCompare(b.name)));
+                setMaterials(matRes.data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)));
                 setInTransactions(inRes.data.sort((a, b) => new Date(b.receivedDate) - new Date(a.receivedDate) || new Date(b.createdAt) - new Date(a.createdAt)));
             } else if (activeTab === 'out') {
                 const [matRes, outRes] = await Promise.all([
                     axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/inventory/packing-materials`, config),
                     axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/packing-issue-notes`, config)
                 ]);
-                setMaterials(matRes.data.sort((a, b) => a.name.localeCompare(b.name)));
+                setMaterials(matRes.data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)));
                 setOutTransactions(outRes.data.sort((a, b) => new Date(b.issueDate) - new Date(a.issueDate) || new Date(b.createdAt) - new Date(a.createdAt)));
             }
         } catch (error) {
@@ -89,7 +90,7 @@ const PackingMaterialManager = () => {
             });
         } else {
             setEditingMaterial(null);
-            setForm({ name: '', sku: '', uom: '', currentQuantity: 0, minStockQty: 0 });
+            setForm({ name: '', sku: '', uom: 'pcs', currentQuantity: 0, minStockQty: 0 });
         }
         setIsModalOpen(true);
     };
@@ -276,6 +277,10 @@ const PackingMaterialManager = () => {
                         </div>
                     </div>
 
+                    {user?.role === 'admin' && (
+                        <PackingMaterialImport onImportSuccess={fetchData} />
+                    )}
+
                     <div className="bg-white rounded-2xl shadow-xl overflow-x-auto border border-gray-100">
                         <table className="w-full text-left border-collapse">
                             <thead>
@@ -283,6 +288,7 @@ const PackingMaterialManager = () => {
                                     <th className="p-5 border-b border-gray-100">Material Name</th>
                                     <th className="p-5 border-b border-gray-100">SKU</th>
                                     <th className="p-5 border-b border-gray-100 text-center">Stock Level</th>
+                                    <th className="p-5 border-b border-gray-100 text-center">Last Updated</th>
                                     <th className="p-5 border-b border-gray-100 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -295,6 +301,10 @@ const PackingMaterialManager = () => {
                                             <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${material.currentQuantity < (material.minStockQty || 0) ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
                                                 {material.currentQuantity} {material.uom}
                                             </span>
+                                        </td>
+                                        <td className="p-5 text-center text-xs text-gray-500">
+                                            {material.updatedAt ? new Date(material.updatedAt).toLocaleDateString() : '-'}
+                                            {material.updatedAt && <div className="text-[10px] opacity-60">{new Date(material.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>}
                                         </td>
                                         <td className="p-5 text-right flex justify-end gap-2">
                                             {user?.role === 'admin' && (

@@ -4,6 +4,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useAuth } from '../context/AuthContext';
 import SearchableSelect from '../components/SearchableSelect';
+import FinishedGoodImport from '../components/FinishedGoodImport';
 import qoflLogo from '../assets/qofl_logo.png';
 
 const FinishedGoodManager = () => {
@@ -422,6 +423,10 @@ const FinishedGoodManager = () => {
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
                         </div>
                     </div>
+
+                    {user?.role === 'admin' && (
+                        <FinishedGoodImport onImportSuccess={fetchData} />
+                    )}
 
                     <div className="bg-white rounded-2xl shadow-xl overflow-x-auto border border-gray-100">
                         <table className="w-full text-left border-collapse">
